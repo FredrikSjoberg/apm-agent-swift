@@ -12,13 +12,16 @@ internal class ApmTracer: Tracer {
     private let reporter: Reporter
     private let idProvider: IdProvider
     private let timestampProvider: TimestampProvider
+    private let logger: Logger
     
     init(reporter: Reporter = ApmReporter(),
          idProvider: IdProvider = ApmIdProvider(),
-         timestampProvider: TimestampProvider = ApmTimestampProvider()) {
+         timestampProvider: TimestampProvider = ApmTimestampProvider(),
+         logger: Logger = LoggerFactory.getLogger(ApmTracer.self, .info)) {
         self.reporter = reporter
         self.idProvider = idProvider
         self.timestampProvider = timestampProvider
+        self.logger = logger
     }
     
     // MARK: Transaction
@@ -102,17 +105,15 @@ internal class ApmTracer: Tracer {
             if let transaction = span as? Transaction {
                 self?.activeTransaction = transaction
             }
-            DispatchQueue.main.async {
-                print("-+ Activating Span")
-                print(span)
-            }
+            self?.logger.debug("Activating Span")
+            self?.logger.debug(span)
         }
     }
     
     func deactivate(_ span: Span) {
         lock.async(flags: .barrier) { [weak self] in
             guard let active = self?.activeSpans[span.id], active.id == span.id else {
-                #warning("APM-TODO: Log warning - deactivating span that is not active")
+                self?.logger.error("Deactivating inactive span {\(span.id)}")
                 return
             }
             
@@ -120,10 +121,8 @@ internal class ApmTracer: Tracer {
             if let transaction = span as? Transaction, transaction.id == span.id {
                 self?.activeTransaction = nil
             }
-            DispatchQueue.main.async {
-                print("-+ Deactivating Span")
-                print(span)
-            }
+            self?.logger.debug("Deactivating Span")
+            self?.logger.debug(span)
             
             self?.activationListeners.forEach { listener in
                 listener.afterDeactivate(span)

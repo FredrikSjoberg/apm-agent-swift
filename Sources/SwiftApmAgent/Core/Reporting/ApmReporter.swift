@@ -16,13 +16,16 @@ internal class ApmReporter: Reporter {
     private let encoderRepository: EncoderRepository
     private let eventQueue: EventQueue
     private let dispatcher: Dispatcher
+    private let logger: Logger
     
     init(encoderRepository: EncoderRepository = ApmEncoderRepository(),
          eventQueue: EventQueue = ApmEventQueue(),
-         dispatcher: Dispatcher = ApmEventDispatcher()) {
+         dispatcher: Dispatcher = ApmEventDispatcher(),
+         logger: Logger = LoggerFactory.getLogger(ApmReporter.self, .info)) {
         self.encoderRepository = encoderRepository
         self.eventQueue = eventQueue
         self.dispatcher = dispatcher
+        self.logger = logger
     }
     
     func report(_ span: Span) {
@@ -32,7 +35,7 @@ internal class ApmReporter: Reporter {
             let event = try encoder.encode(span)
             eventQueue.push(event)
         } catch {
-            #warning("APM-TODO: Handle serialization error")
+            logger.error("Failed to encode span {\(span.id)}. Error: \(error)")
         }
     }
     
