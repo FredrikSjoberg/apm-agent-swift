@@ -10,7 +10,7 @@ import Foundation
 @objc
 public class ApmAgent: NSObject {
     @objc
-    class func shared() -> ApmAgent {
+    public class func shared() -> ApmAgent {
         return sharedInstance
     }
     private static let sharedInstance = ApmAgent()
@@ -22,4 +22,11 @@ public class ApmAgent: NSObject {
     }
     
     @objc var tracer: Tracer
+    
+    public func register(_ plugins: [Plugin]) {
+        plugins.forEach { plugin in
+            plugin.configure()
+        }
+    }
 }
+
