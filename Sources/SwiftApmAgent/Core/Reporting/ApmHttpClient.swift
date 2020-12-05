@@ -8,5 +8,7 @@
 import Foundation
 
 internal class ApmHttpClient: HttpClient {
-    
+    func send(_ request: URLRequest) {
+        
+    }
 }

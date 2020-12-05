@@ -8,6 +8,5 @@
 import Foundation
 
 internal protocol Dispatcher {
-    var dispatchFrequency: TimeInterval { get set }
-    func start()
+    func post(_ batchEvent: ApmBatchEvent)
 }

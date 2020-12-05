@@ -7,20 +7,23 @@
 
 import Foundation
 
-public class ApmAgent: NSObject {
+public class ApmAgent {
     
     public class func shared() -> ApmAgent {
         return sharedInstance
     }
     private static let sharedInstance = ApmAgent()
     
-    override private init() {
+    private init() {
         tracer = ApmTracer()
-        
-        super.init()
     }
     
-    var tracer: Tracer
+    internal var tracer: Tracer
+    internal var serverConfiguration: ApmServerConfiguration?
+    
+    public func configure(_ serverConfiguration: ApmServerConfiguration) {
+        self.serverConfiguration = serverConfiguration
+    }
     
     public func register(_ plugins: [Plugin]) {
         plugins.forEach { plugin in

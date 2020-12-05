@@ -8,5 +8,5 @@
 import Foundation
 
 internal protocol HttpClient {
-    
+    func send(_ request: URLRequest)
 }

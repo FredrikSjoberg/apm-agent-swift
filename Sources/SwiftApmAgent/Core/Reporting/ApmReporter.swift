@@ -7,10 +7,6 @@
 
 import Foundation
 
-internal struct ApmServerConfiguration {
-    
-}
-
 internal class ApmReporter: Reporter {
     
     private let encoderRepository: EncoderRepository
@@ -26,6 +22,10 @@ internal class ApmReporter: Reporter {
         self.eventQueue = eventQueue
         self.dispatcher = dispatcher
         self.logger = logger
+        
+        self.eventQueue.registerDispatchListener { [weak self] event in
+            self?.dispatcher.post(event)
+        }
     }
     
     func register(intakeEncoders: [String: () -> IntakeEncoder]) {
@@ -41,17 +41,5 @@ internal class ApmReporter: Reporter {
         } catch {
             logger.error("Failed to encode span with span.id=\(span.id). Error: \(error)")
         }
-    }
-    
-    func resume() {
-        
-    }
-    
-    func pause() {
-        
-    }
-    
-    func flush() {
-        
     }
 }

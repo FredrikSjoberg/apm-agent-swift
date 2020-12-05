@@ -27,7 +27,7 @@ internal class ApmURLRequestHelper: NSObject {
         
         guard let method = request.httpMethod,
               let url = request.url else {
-            ApmURLSessionPlugin.logger.error("Invalid URLRequest, missing httpMethod=\(request.httpMethod) or url=\(request.url)")
+            ApmURLSessionPlugin.logger.error("Invalid URLRequest, missing httpMethod=\(request.httpMethod ?? "nil") or url=\(request.url?.host ?? "nil")")
             return span
         }
         

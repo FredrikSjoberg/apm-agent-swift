@@ -5,6 +5,10 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftApmAgent",
+    platforms: [
+        .macOS(SupportedPlatform.MacOSVersion.v10_11),
+        .iOS(.v11)
+    ],
     products: [
         .library(
             name: "SwiftApmAgent",
