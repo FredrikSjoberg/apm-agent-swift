@@ -26,6 +26,11 @@ internal class ApmTracer: Tracer {
     
     // MARK: Transaction
     func startRootTransaction(name: String, type: String) -> Transaction {
+        if let activeTransaction = currentTransaction() {
+            logger.debug("Deactivating currently active transactionId=\(activeTransaction.id) before starting new root transaction")
+            activeTransaction.deactivate()
+            activeTransaction.end()
+        }
         let context = ApmTraceContext(traceId: idProvider.generateTraceId(),
                                       transactionId: idProvider.generateId())
         let transaction = ApmTransaction(name: name,
@@ -51,6 +56,7 @@ internal class ApmTracer: Tracer {
                                timestampProvider: timestampProvider)
             return span
         } else {
+            logger.debug("No active transaction to spawn spans. Creating new root transaction")
             return startRootTransaction(name: name, type: type)
         }
     }

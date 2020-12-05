@@ -12,7 +12,7 @@ internal struct LoggerFactory {
         guard let identifier = Bundle(for: object).bundleIdentifier else {
             fatalError("LoggerFactory: Unable to determine logger for object, \(object.description())")
         }
-        let description = String(describing: type(of: object))
+        let description = String(describing: object)
         if #available(macOS 11, iOS 11, *) {
             return ApmOSLogger(subsystem: identifier, category: description, logLevel: logLevel)
         } else {
