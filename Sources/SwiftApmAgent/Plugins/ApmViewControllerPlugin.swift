@@ -16,6 +16,10 @@ public class ApmViewControllerPlugin: NSObject, Plugin {
         "com.apple"
     ]
     
+    public var intakeEncoders: [String : () -> IntakeEncoder] {
+        return [:]
+    }
+    
     public func configure() {
         UIViewController.apm_swizzleViewDidAppear()
         UIViewController.apm_wizzleViewWillDisappear()

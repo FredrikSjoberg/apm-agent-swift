@@ -25,6 +25,7 @@ public class ApmAgent: NSObject {
     public func register(_ plugins: [Plugin]) {
         plugins.forEach { plugin in
             plugin.configure()
+            (tracer as? ApmTracer)?.register(intakeEncoders: plugin.intakeEncoders)
         }
     }
 }

@@ -24,10 +24,14 @@ internal class ApmTracer: Tracer {
         self.logger = logger
     }
     
+    func register(intakeEncoders: [String: () -> IntakeEncoder]) {
+        (reporter as? ApmReporter)?.register(intakeEncoders: intakeEncoders)
+    }
+    
     // MARK: Transaction
     func startRootTransaction(name: String, type: String) -> Transaction {
         if let activeTransaction = currentTransaction() {
-            logger.debug("Deactivating currently active transactionId=\(activeTransaction.id) before starting new root transaction")
+            logger.debug("Deactivating currently active transaction with transaction.id=\(activeTransaction.id) before starting new root transaction")
             activeTransaction.deactivate()
             activeTransaction.end()
         }

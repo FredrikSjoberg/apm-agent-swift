@@ -26,6 +26,12 @@ internal class ApmEncoderRepository: EncoderRepository {
         self.encoderGenerators = encoderGenerators
     }
     
+    func register(intakeEncoders: [String: () -> IntakeEncoder]) {
+        intakeEncoders.forEach { key, value in
+            encoderGenerators[key] = value
+        }
+    }
+    
     func encoder(for identifier: String) throws -> IntakeEncoder {
         guard let generator = encoderGenerators[identifier] else {
             throw ApmEncodingError.encoderNotFound(identifier)

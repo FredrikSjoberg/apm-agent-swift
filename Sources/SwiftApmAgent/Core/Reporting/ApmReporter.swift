@@ -28,6 +28,10 @@ internal class ApmReporter: Reporter {
         self.logger = logger
     }
     
+    func register(intakeEncoders: [String: () -> IntakeEncoder]) {
+        encoderRepository.register(intakeEncoders: intakeEncoders)
+    }
+    
     func report(_ span: Span) {
         let encoderIdentifier = type(of: span.spanContext).encoderIdentifier
         do {
@@ -35,7 +39,7 @@ internal class ApmReporter: Reporter {
             let event = try encoder.encode(span)
             eventQueue.push(event)
         } catch {
-            logger.error("Failed to encode span {\(span.id)}. Error: \(error)")
+            logger.error("Failed to encode span with span.id=\(span.id). Error: \(error)")
         }
     }
     

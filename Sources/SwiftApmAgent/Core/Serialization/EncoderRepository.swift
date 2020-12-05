@@ -8,5 +8,6 @@
 import Foundation
 
 internal protocol EncoderRepository {
+    func register(intakeEncoders: [String: () -> IntakeEncoder])
     func encoder(for identifier: String) throws -> IntakeEncoder
 }
