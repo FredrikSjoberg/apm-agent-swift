@@ -7,7 +7,6 @@
 
 import Foundation
 
-@objc
 public protocol IntakeEncoder {
     func encode(_ span: Span) throws -> Data
 }

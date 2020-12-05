@@ -7,7 +7,6 @@
 
 import Foundation
 
-@objc
 public protocol SpanContext {
     static var encoderIdentifier: String { get }
 }

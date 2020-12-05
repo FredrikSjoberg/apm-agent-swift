@@ -7,7 +7,6 @@
 
 import Foundation
 
-@objc
 internal enum LogLevel: Int {
     case debug
     case info

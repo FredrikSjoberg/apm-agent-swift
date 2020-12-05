@@ -7,9 +7,8 @@
 
 import Foundation
 
-@objc
 public class ApmAgent: NSObject {
-    @objc
+    
     public class func shared() -> ApmAgent {
         return sharedInstance
     }
@@ -21,7 +20,7 @@ public class ApmAgent: NSObject {
         super.init()
     }
     
-    @objc var tracer: Tracer
+    var tracer: Tracer
     
     public func register(_ plugins: [Plugin]) {
         plugins.forEach { plugin in

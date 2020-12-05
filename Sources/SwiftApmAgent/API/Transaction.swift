@@ -7,5 +7,4 @@
 
 import Foundation
 
-@objc
 public protocol Transaction: Span { }

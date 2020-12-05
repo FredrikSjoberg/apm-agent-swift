@@ -7,7 +7,6 @@
 
 import Foundation
 
-@objc
 public protocol Tracer: AnyObject {
     // MARK: Transaction
     func startRootTransaction(name: String, type: String) -> Transaction

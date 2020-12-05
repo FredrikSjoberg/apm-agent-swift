@@ -7,7 +7,6 @@
 
 import Foundation
 
-@objc
 public protocol Span {
     var name: String { get set }
     var type: String { get set }

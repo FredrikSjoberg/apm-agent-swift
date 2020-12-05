@@ -7,7 +7,6 @@
 
 import Foundation
 
-@objc
 public protocol TraceContext {
     #warning("APM-TODO: Implement https://w3c.github.io/trace-context/#traceparent-field")
     

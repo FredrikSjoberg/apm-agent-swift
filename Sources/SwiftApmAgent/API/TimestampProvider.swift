@@ -7,7 +7,6 @@
 
 import Foundation
 
-@objc
 public protocol TimestampProvider {
     var epochNow: Int64 { get }
 }

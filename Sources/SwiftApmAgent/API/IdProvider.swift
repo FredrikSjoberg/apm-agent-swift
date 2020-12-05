@@ -7,7 +7,6 @@
 
 import Foundation
 
-@objc
 public protocol IdProvider {
     func generateId() -> String
     func generateTraceId() -> String

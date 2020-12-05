@@ -7,7 +7,6 @@
 
 import Foundation
 
-@objc
 public protocol Plugin {
     func configure()
 }

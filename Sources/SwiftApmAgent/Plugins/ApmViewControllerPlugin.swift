@@ -9,7 +9,6 @@ import Foundation
 #if !os(macOS)
 import UIKit
 
-@objc
 public class ApmViewControllerPlugin: NSObject, Plugin {
     static internal let logger: Logger = LoggerFactory.getLogger(ApmViewControllerPlugin.self, .info)
     
