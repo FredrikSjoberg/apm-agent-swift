@@ -20,7 +20,7 @@ internal class ApmTransactionEncoder: IntakeEncoder {
             throw ApmEncodingError.unsupportedEventType(span)
         }
         
-        guard let context = transaction.spanContext as? ApmSpanContext else {
+        guard let context = transaction.spanContext as? ApmTransactionContext else {
             throw ApmEncodingError.unsupportedSpanContext(transaction)
         }
         
@@ -28,7 +28,7 @@ internal class ApmTransactionEncoder: IntakeEncoder {
         return try jsonEncoder.encode(event)
     }
     
-    private func transactionEvent(transaction: Transaction, context: ApmSpanContext) -> TransactionEvent {
+    private func transactionEvent(transaction: Transaction, context: ApmTransactionContext) -> TransactionEvent {
         let event = TransactionEvent.Transaction(timestamp: transaction.timestamp,
                                                  type: transaction.type,
                                                  name: transaction.name,
