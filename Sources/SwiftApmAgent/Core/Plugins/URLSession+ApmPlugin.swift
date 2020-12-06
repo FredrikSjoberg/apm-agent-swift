@@ -8,6 +8,19 @@
 import Foundation
 
 internal extension URLSession {
+    private func shouldMonitor(_ request: URLRequest) -> Bool {
+        guard let url = request.url else {
+            return false
+        }
+        return shouldMonitor(url)
+    }
+    
+    private func shouldMonitor(_ url: URL) -> Bool {
+        if ApmAgent.shared().serverConfiguration?.serverURL.host == url.host {
+            return false
+        }
+        return true
+    }
     
     @objc
     func apmDataTaskRequest(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
@@ -15,6 +28,9 @@ internal extension URLSession {
     }
     
     private func apmBridgedDataTaskRequest(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
+        guard shouldMonitor(request) else {
+            return apmDataTaskRequest(with: request, completionHandler: completionHandler)
+        }
         
         let parent = ApmAgent.shared().tracer.getActive()
         let activeTransactionId = ApmAgent.shared().tracer.currentTransaction()?.id
@@ -46,6 +62,10 @@ internal extension URLSession {
     }
     
     private func apmBridgedDataTaskURL(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
+        guard shouldMonitor(request) else {
+            return apmDataTaskURL(with: url, completionHandler: completionHandler)
+        }
+        
         return apmDataTaskURL(with: url) { data, response, error in
             completionHandler(data, response, error)
         }

@@ -8,6 +8,7 @@
 import Foundation
 
 internal class ApmEventDispatcher: Dispatcher {
+    private let intakePath: String = "intake/v2/events"
     private let httpClient: HttpClient
     private let logger: Logger
     private let newline = "\n".data(using: .utf8)
@@ -19,12 +20,16 @@ internal class ApmEventDispatcher: Dispatcher {
     }
     
     private func urlRequest(_ batchEvent: ApmBatchEvent) -> URLRequest? {
-        guard let url = ApmAgent.shared().serverConfiguration?.serverURL else {
+        guard let serverURL = ApmAgent.shared().serverConfiguration?.serverURL else {
             logger.error("Apm serverURL not configured")
             return nil
         }
-        var request = URLRequest(url: url)
+        let intakeURL = serverURL.appendingPathComponent(intakePath)
+        var request = URLRequest(url: intakeURL)
+        request.httpMethod = "POST"
+        request.setValue("application/x-ndjson", forHTTPHeaderField: "Content-Type")
         request.httpBody = newLineDelimitedJson(batchEvent.events)
+        return request
         return request
     }
     
