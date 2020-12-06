@@ -58,7 +58,7 @@ struct MetadataEvent: ReporterEvent {
         /// Version: https://github.com/elastic/apm-server/blob/v7.10.0/docs/spec/service.json
         struct Service: Encodable {
             /// Immutable name of the service emitting this event
-            let name: String?
+            let name: String
             
             /// Version of the service emitting this event
             let version: String?
@@ -67,7 +67,7 @@ struct MetadataEvent: ReporterEvent {
             let environment: String?
             
             // Name and version of the Elastic APM agent
-            let agent: Agent?
+            let agent: Agent
             
             /// Name and version of the language runtime running this service
             let runtime: Runtime?
@@ -77,10 +77,10 @@ struct MetadataEvent: ReporterEvent {
             
             struct Agent: Encodable {
                 /// Name of the Elastic APM agent, e.g 'SwiftApmAgent'
-                let name: String?
+                let name: String
                 
                 /// Version of the Elastic APM agent, e.g. '1.0.0'
-                let version: String?
+                let version: String
             }
             
             struct Runtime: Encodable {

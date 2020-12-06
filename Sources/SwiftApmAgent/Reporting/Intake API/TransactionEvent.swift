@@ -31,7 +31,7 @@ struct TransactionEvent: ReporterEvent {
         /// Hex encoded 64 random bits ID of the parent transaction or span. Only root transactions of a trace do not have a parent_id, otherwise it needs to be set.
         let parentId: String?
         
-        let spanCount: SpanCount?
+        let spanCount: SpanCount
         
         struct SpanCount: Encodable {
             /// Number of correlated spans that are recorded.

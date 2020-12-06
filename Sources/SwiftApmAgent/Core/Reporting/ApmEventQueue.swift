@@ -41,11 +41,48 @@ internal class ApmEventQueue: EventQueue {
             guard let event = self?.nextBatch else {
                 return
             }
+            guard let metadata = self?.generateMetadataEvent() else {
+                self?.logger.error("Unable to generate Metadata Event")
+                return
+            }
+            event.events.insert(metadata, at: 0)
             self?.dispatchListener?(event)
         }
         
         queue.asyncAfter(deadline: .now() + .seconds(dispatchFrequency), execute: item)
         workItem = item
+    }
+    
+    private func generateMetadataEvent() -> Data? {
+        guard let serviceName = ApmAgent.shared().serverConfiguration?.serviceName else {
+            logger.error("ServiceName not configured - unable to generate Metadata Event")
+            return nil
+        }
+        do {
+            let metadata = MetadataEvent(metadata: .init(process: nil,
+                                                         system: nil,
+                                                         service: generateMetadataService(serviceName: serviceName)))
+            let metadataEncoder = JSONEncoder()
+            metadataEncoder.keyEncodingStrategy = .convertToSnakeCase
+            return try metadataEncoder.encode(metadata)
+        } catch {
+            logger.error("Failed to serialize Metadata Event")
+            return nil
+        }
+    }
+    
+    private func generateMetadataService(serviceName: String) -> MetadataEvent.Metadata.Service {
+        return .init(name: serviceName,
+                     version: nil,
+                     environment: nil,
+                     agent: generateMetadataAgent(),
+                     runtime: nil,
+                     language: nil)
+    }
+    
+    private func generateMetadataAgent() -> MetadataEvent.Metadata.Service.Agent {
+        return .init(name: ApmAgent.shared().agentName,
+                     version: ApmAgent.shared().agentVersion)
     }
     
     // MARK: <EventQueue>

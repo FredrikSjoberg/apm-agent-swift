@@ -62,7 +62,7 @@ internal extension URLSession {
     }
     
     private func apmBridgedDataTaskURL(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
-        guard shouldMonitor(request) else {
+        guard shouldMonitor(url) else {
             return apmDataTaskURL(with: url, completionHandler: completionHandler)
         }
         

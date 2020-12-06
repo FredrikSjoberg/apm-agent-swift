@@ -41,13 +41,17 @@ internal class ApmURLSessionSpanEncoder: IntakeEncoder {
                                                  id: transaction.id,
                                                  traceId: transaction.traceContext.traceId,
                                                  parentId: transaction.traceContext.parentId,
-                                                 spanCount: nil,
+                                                 spanCount: spanCount(),
                                                  duration: transaction.duration,
                                                  result: result(context),
                                                  outcome: outcome(context),
                                                  sampled: true,
                                                  context: transactionContext(context))
         return .init(transaction: event)
+    }
+    
+    private func spanCount() -> TransactionEvent.Transaction.SpanCount {
+        return .init(started: 0, dropped: nil)
     }
     
     private func result(_ context: ApmURLSessionSpanContext) -> String? {

@@ -8,9 +8,12 @@
 import Foundation
 
 public class ApmServerConfiguration {
+    public let serviceName: String
     public let serverURL: URL
     
-    init(serverURL: URL) {
+    init(serviceName: String,
+         serverURL: URL) {
+        self.serviceName = serviceName
         self.serverURL = serverURL
     }
 }

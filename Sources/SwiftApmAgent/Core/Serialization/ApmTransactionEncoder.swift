@@ -35,12 +35,16 @@ internal class ApmTransactionEncoder: IntakeEncoder {
                                                  id: transaction.id,
                                                  traceId: transaction.traceContext.traceId,
                                                  parentId: transaction.traceContext.parentId,
-                                                 spanCount: nil,
+                                                 spanCount: spanCount(),
                                                  duration: transaction.duration,
                                                  result: nil,
                                                  outcome: nil,
                                                  sampled: true,
                                                  context: nil)
         return .init(transaction: event)
+    }
+    
+    private func spanCount() -> TransactionEvent.Transaction.SpanCount {
+        return .init(started: 0, dropped: nil)
     }
 }

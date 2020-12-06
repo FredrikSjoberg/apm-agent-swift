@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  ApmAgent.swift
 //  
 //
 //  Created by Fredrik Sjöberg on 2020-12-04.
@@ -8,6 +8,9 @@
 import Foundation
 
 public class ApmAgent {
+    #warning("APM-TODO: Use correct Agent Version")
+    public let agentName: String = "SwiftApmAgent"
+    public let agentVersion: String = "1.0.0"
     
     public class func shared() -> ApmAgent {
         return sharedInstance
