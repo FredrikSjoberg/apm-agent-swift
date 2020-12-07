@@ -19,6 +19,14 @@ internal extension URLSession {
         if ApmAgent.shared().serverConfiguration?.serverURL.host == url.host {
             return false
         }
+        if let urlSessionPlugin = ApmAgent.shared().plugin(ApmURLSessionPlugin.self), let host = url.host {
+            let isExcluded = urlSessionPlugin.excludedHosts.contains(where: { excludedHost in
+                excludedHost == host
+            })
+            if isExcluded {
+                return false
+            }
+        }
         return true
     }
     

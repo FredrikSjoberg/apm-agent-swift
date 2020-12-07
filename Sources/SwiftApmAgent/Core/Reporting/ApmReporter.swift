@@ -35,6 +35,7 @@ internal class ApmReporter: Reporter {
     func report(_ span: Span) {
         let encoderIdentifier = type(of: span.spanContext).encoderIdentifier
         do {
+            logger.debug("Preparing encode span for dispatch \n \(span)")
             let encoder = try encoderRepository.encoder(for: encoderIdentifier)
             let event = try encoder.encode(span)
             eventQueue.push(event)

@@ -30,7 +30,6 @@ internal class ApmEventDispatcher: Dispatcher {
         request.setValue("application/x-ndjson", forHTTPHeaderField: "Content-Type")
         request.httpBody = newLineDelimitedJson(batchEvent.events)
         return request
-        return request
     }
     
     private func newLineDelimitedJson(_ data: [Data]) -> Data? {

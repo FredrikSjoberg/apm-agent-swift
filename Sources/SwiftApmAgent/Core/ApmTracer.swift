@@ -115,8 +115,7 @@ internal class ApmTracer: Tracer {
             if let transaction = span as? Transaction {
                 self?.activeTransaction = transaction
             }
-            self?.logger.debug("Activating Span")
-            self?.logger.debug(span)
+            self?.logger.debug("Activating Span \n \(span)")
         }
     }
     
@@ -131,8 +130,7 @@ internal class ApmTracer: Tracer {
             if let transaction = span as? Transaction, transaction.id == span.id {
                 self?.activeTransaction = nil
             }
-            self?.logger.debug("Deactivating Span")
-            self?.logger.debug(span)
+            self?.logger.debug("Deactivating Span \n \(span)")
             
             self?.activationListeners.forEach { listener in
                 listener.afterDeactivate(span)

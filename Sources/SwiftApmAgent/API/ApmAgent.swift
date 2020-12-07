@@ -23,6 +23,7 @@ public class ApmAgent {
     
     internal var tracer: Tracer
     internal var serverConfiguration: ApmServerConfiguration?
+    internal var plugins: [Plugin] = []
     
     public func configure(_ serverConfiguration: ApmServerConfiguration) {
         self.serverConfiguration = serverConfiguration
@@ -33,6 +34,14 @@ public class ApmAgent {
             plugin.configure()
             (tracer as? ApmTracer)?.register(intakeEncoders: plugin.intakeEncoders)
         }
+        self.plugins = plugins
+    }
+    
+    internal func plugin<T>(_ type: T.Type) -> T? where T: Plugin {
+        return plugins.compactMap {
+            $0 as? T
+        }
+        .first
     }
 }
 

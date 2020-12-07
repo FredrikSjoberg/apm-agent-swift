@@ -8,7 +8,7 @@
 import Foundation
 
 public class ApmURLSessionPlugin: Plugin {
-    static internal let logger: Logger = LoggerFactory.getLogger(ApmURLSessionPlugin.self, .info)
+    internal static let logger: Logger = LoggerFactory.getLogger(ApmURLSessionPlugin.self, .info)
     
     public func configure() {
         ApmURLSessionPlugin.apm_swizzleDataTaskRequestImpl()
@@ -26,6 +26,9 @@ public class ApmURLSessionPlugin: Plugin {
             ApmURLSessionSpanContext.encoderIdentifier: { ApmURLSessionSpanEncoder(jsonEncoder: ApmURLSessionPlugin.jsonEncoder) }
         ]
     }
+    
+    /// Specified hosts will be excluded from tracing
+    public var excludedHosts: [String] = []
     
     private static func apm_swizzleDataTaskURLImpl() {
         let instance = URLSession.shared
