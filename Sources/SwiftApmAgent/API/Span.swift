@@ -11,7 +11,12 @@ public protocol Span {
     var name: String { get set }
     var type: String { get set }
     var subtype: String? { get set }
+    
+    /// Recorded time of the event, UTC based and formatted as microseconds since Unix epoch
     var timestamp: Int64 { get }
+    
+    /// How long the transaction took to complete, in ms with 3 decimal points
+    ///
     /// Negative duration means no duration
     var duration: Int64 { get set }
     

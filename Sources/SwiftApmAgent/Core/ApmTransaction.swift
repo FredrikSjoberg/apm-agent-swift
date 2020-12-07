@@ -11,7 +11,7 @@ internal class ApmTransaction: Transaction, CustomStringConvertible {
     
     private weak var tracer: Tracer?
     private let idProvider: IdProvider
-    private let timestmapProvider: TimestampProvider
+    private let timestampProvider: TimestampProvider
     
     var timestamp: Int64
     var duration: Int64
@@ -27,7 +27,7 @@ internal class ApmTransaction: Transaction, CustomStringConvertible {
         self.traceContext = traceContext
         self.spanContext = spanContext
         self.idProvider = idProvider
-        self.timestmapProvider = timestampProvider
+        self.timestampProvider = timestampProvider
         self.id = idProvider.generateId()
         self.timestamp = timestampProvider.epochNow
         self.name = name
@@ -48,7 +48,7 @@ internal class ApmTransaction: Transaction, CustomStringConvertible {
     var finished: Bool = false
     
     func end() {
-        duration = timestmapProvider.epochNow - timestamp
+        duration = (timestampProvider.epochNow - timestamp) / ApmTimestampProvider.microSeconds
         finished = true
         tracer?.endTransaction(self)
     }
@@ -71,7 +71,7 @@ internal class ApmTransaction: Transaction, CustomStringConvertible {
                            type: type,
                            tracer: tracer,
                            traceContext: context,
-                           timestampProvider: timestmapProvider)
+                           timestampProvider: timestampProvider)
         return span
     }
     

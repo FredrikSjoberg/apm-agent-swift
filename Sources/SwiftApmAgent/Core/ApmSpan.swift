@@ -73,7 +73,7 @@ internal class ApmSpan: Span, CustomStringConvertible {
     }
     
     func end() {
-        duration = timestampProvider.epochNow - timestamp
+        duration = (timestampProvider.epochNow - timestamp) / ApmTimestampProvider.microSeconds
         finished = true
         tracer?.endSpan(self)
     }

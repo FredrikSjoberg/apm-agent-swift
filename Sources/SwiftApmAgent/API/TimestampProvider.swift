@@ -8,5 +8,6 @@
 import Foundation
 
 public protocol TimestampProvider {
+    /// Timestamp in unix epoch time as microseconds
     var epochNow: Int64 { get }
 }

@@ -39,7 +39,7 @@ internal class ApmSpanEncoder: IntakeEncoder {
                                    traceId: span.traceContext.traceId,
                                    parentId: span.traceContext.parentId ?? span.traceContext.transactionId,
                                    childIds: [],
-                                   start: span.timestamp,
+                                   start: span.timestamp / ApmTimestampProvider.milliSeconds,
                                    action: nil,
                                    outcome: nil,
                                    context: nil,
