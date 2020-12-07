@@ -8,15 +8,11 @@
 import Foundation
 
 internal class ApmHttpClient: HttpClient {
-    private static var defaultURLSession: URLSession = {
-        let configuration = URLSessionConfiguration()
-        return URLSession(configuration: configuration)
-    }()
     
     private let urlSession: URLSession
     private let logger: Logger
     
-    init(urlSession: URLSession = ApmHttpClient.defaultURLSession,
+    init(urlSession: URLSession = URLSession.shared,
          logger: Logger = LoggerFactory.getLogger(ApmHttpClient.self, .info)) {
         self.urlSession = urlSession
         self.logger = logger
