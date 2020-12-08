@@ -10,11 +10,18 @@ import Foundation
 import UIKit
 
 public class ApmViewControllerPlugin: NSObject, Plugin {
-    static internal let logger: Logger = LoggerFactory.getLogger(ApmViewControllerPlugin.self, .info)
+    internal static let logger: Logger = LoggerFactory.getLogger(ApmViewControllerPlugin.self, .info)
     
-    var excludedViewControllerBundles: Set<String> = [
+    public var excludedViewControllerBundles: Set<String> = [
         "com.apple"
     ]
+    
+    public enum TraceMode {
+        case transaction
+        case span
+    }
+    
+    public var traceMode: TraceMode = .transaction
     
     public var intakeEncoders: [String : () -> IntakeEncoder] {
         return [:]

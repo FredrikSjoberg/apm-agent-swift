@@ -50,6 +50,55 @@ internal extension UIViewController {
     }
     
     private func apmBridgedViewDidAppear(_ animated: Bool) {
+        defer {
+            apmViewDidAppear(animated)
+        }
+        
+        guard ScreenStack.shared.shouldMonitor(self) else {
+            return
+        }
+        
+        guard let plugin = ApmAgent.shared().plugin(ApmViewControllerPlugin.self) else {
+            ApmViewControllerPlugin.logger.error("Plugin not found")
+            return
+        }
+        
+        switch plugin.traceMode {
+        case .transaction:
+            traceViewDidAppearTransaction()
+        case .span:
+            traceViewDidAppearSpan()
+        }
+        
+        apmViewDidAppear(animated)
+    }
+    
+    @objc
+    func apmViewWillDisappear(_ animated: Bool) {
+        defer {
+            apmBridgedViewWillDisappear(animated)
+        }
+        
+        guard ScreenStack.shared.shouldMonitor(self) else {
+            return
+        }
+        
+        guard let plugin = ApmAgent.shared().plugin(ApmViewControllerPlugin.self) else {
+            ApmViewControllerPlugin.logger.error("Plugin not found")
+            return
+        }
+        
+        if plugin.traceMode == .span {
+            traceViewWillDisappear()
+        }
+    }
+    
+    private func apmBridgedViewWillDisappear(_ animated: Bool) {
+        apmViewWillDisappear(animated)
+    }
+    
+    // MARK: Trace Management
+    private func traceViewDidAppearTransaction() {
         if let _ = ScreenStack.shared.pop(self) {
             ApmViewControllerPlugin.logger.debug("Deactivating Transaction: \(screenName)")
             let transaction = ApmAgent.shared().tracer.currentTransaction()
@@ -62,17 +111,39 @@ internal extension UIViewController {
             let transaction = ApmAgent.shared().tracer.startRootTransaction(name: screenName, type: "screen-view")
             transaction.activate()
         }
-        
-        apmViewDidAppear(animated)
     }
     
-    @objc
-    func apmViewWillDisappear(_ animated: Bool) {
-        apmBridgedViewWillDisappear(animated)
+    private func traceViewDidAppearSpan() {
+        ApmViewControllerPlugin.logger.debug("Activating Span: \(screenName)")
+        let parent = ApmAgent.shared().tracer.getActive()
+        let span = parent?.createSpan(name: screenName, type: "screen-view")
+        associateSpan(span)
+        span?.activate()
     }
     
-    private func apmBridgedViewWillDisappear(_ animated: Bool) {
-        apmViewWillDisappear(animated)
+    private func traceViewWillDisappear() {
+        let span = getAssociatedSpan()
+        span?.deactivate()
+        span?.end()
+    }
+    
+    // MARK: Object Association
+    private struct AssociatedKeys {
+        static var span: UInt8 = 0
+    }
+    
+    private func associateSpan(_ span: Span?) {
+        if let span = span {
+            objc_setAssociatedObject(self, &AssociatedKeys.span, span, .OBJC_ASSOCIATION_RETAIN)
+        }
+    }
+    
+    private func getAssociatedSpan() -> Span? {
+        let span = objc_getAssociatedObject(self, &AssociatedKeys.span) as? Span
+        if let span = span {
+            objc_removeAssociatedObjects(span)
+        }
+        return span
     }
 }
 #endif

@@ -109,5 +109,6 @@ internal class ApmEventQueue: EventQueue {
             return
         }
         dispatchListener = request
+        startDispatchTimer()
     }
 }

@@ -22,19 +22,22 @@ internal class ScreenStack {
         self.logger = logger
     }
     
-    func shouldMonitor(_ viewController: UIViewController) -> Bool {
+    internal func shouldMonitor(_ viewController: UIViewController) -> Bool {
         let bundle = Bundle(for: type(of: viewController))
         guard let bundleIdentifier = bundle.bundleIdentifier else {
+            logger.error("No bundleIdentifier for ViewController: \(viewController.screenName)")
             return false
         }
         
         guard !ScreenStack.excludedViewControllerBundles.contains(where: {
             bundleIdentifier.hasPrefix($0)
         }) else {
+            logger.debug("ViewController is excluded: \(viewController.screenName)")
             return false
         }
         
         guard viewController.children.isEmpty else {
+            logger.debug("ViewController has children: \(viewController.screenName)")
             return false
         }
         
