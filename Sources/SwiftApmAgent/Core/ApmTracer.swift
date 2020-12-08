@@ -96,6 +96,9 @@ internal class ApmTracer: Tracer {
                     active = activeSpanQueue.popLast()
                 }
             }
+            if active == nil {
+                active = activeTransaction
+            }
         }
         return active
     }
