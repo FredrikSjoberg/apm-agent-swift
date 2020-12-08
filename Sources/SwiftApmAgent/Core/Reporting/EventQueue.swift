@@ -9,6 +9,7 @@ import Foundation
 
 internal protocol EventQueue {
     func push(_ event: Data)
+    func flush()
     var nextBatch: ApmBatchEvent? { get }
     var dispatchFrequency: Int { get set }
     func registerDispatchListener(_ request: @escaping (ApmBatchEvent) -> Void)

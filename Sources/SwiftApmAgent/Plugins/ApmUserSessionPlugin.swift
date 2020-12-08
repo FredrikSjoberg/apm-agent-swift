@@ -24,7 +24,7 @@ class ApmUserSessionPlugin: Plugin {
             self?.startUserSession(notification: notification)
         }
         
-        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { [weak self] notification in
+        NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main) { [weak self] notification in
             self?.endUserSession(notification: notification)
         }
     }

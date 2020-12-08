@@ -13,13 +13,23 @@ internal class ApmEventQueue: EventQueue {
     private let queue = DispatchQueue(label: "com.swiftapmagent.core.reporter.eventqueue.dispatch")
     private var workItem: DispatchWorkItem?
     private var dispatchListener: ((ApmBatchEvent) -> Void)?
+    private var dispatchNotificationListener: DispatchNotificationListener
     private let logger: Logger
     private var batch: ApmBatchEvent?
     
     init(dispatchFrequency: Int = 60,
-         logger: Logger = LoggerFactory.getLogger(ApmEventQueue.self, .info)) {
+         logger: Logger = LoggerFactory.getLogger(ApmEventQueue.self, .info),
+         dispatchNotificationListener: DispatchNotificationListener = ApmDispatchNotificationListener()) {
         self.dispatchFrequency = dispatchFrequency
         self.logger = logger
+        self.dispatchNotificationListener = dispatchNotificationListener
+        
+        self.dispatchNotificationListener.registerShouldFlushListener { [weak self] in
+            self?.flush()
+        }
+        self.dispatchNotificationListener.registerShouldStartFlushListener { [weak self] in
+            self?.startDispatchTimer()
+        }
     }
     
     private func enqueue(_ event: Data) {
@@ -35,18 +45,7 @@ internal class ApmEventQueue: EventQueue {
         workItem?.cancel()
         
         let item = DispatchWorkItem(qos: .utility) { [weak self] in
-            defer {
-                self?.startDispatchTimer()
-            }
-            guard let event = self?.nextBatch else {
-                return
-            }
-            guard let metadata = self?.generateMetadataEvent() else {
-                self?.logger.error("Unable to generate Metadata Event")
-                return
-            }
-            event.events.insert(metadata, at: 0)
-            self?.dispatchListener?(event)
+            self?.flush()
         }
         
         queue.asyncAfter(deadline: .now() + .seconds(dispatchFrequency), execute: item)
@@ -90,6 +89,25 @@ internal class ApmEventQueue: EventQueue {
         lock.async(flags: .barrier) { [weak self] in
             self?.enqueue(event)
         }
+    }
+    
+    func flush() {
+        defer {
+            startDispatchTimer()
+        }
+        guard let event = nextBatch else {
+            return
+        }
+        guard let metadata = generateMetadataEvent() else {
+            logger.error("Unable to generate Metadata Event")
+            return
+        }
+        event.events.insert(metadata, at: 0)
+        
+        if dispatchListener == nil {
+            logger.info("Flushing event queue with no event listener registered")
+        }
+        dispatchListener?(event)
     }
     
     var nextBatch: ApmBatchEvent? {
