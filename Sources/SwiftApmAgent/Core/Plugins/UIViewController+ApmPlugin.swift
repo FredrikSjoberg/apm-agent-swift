@@ -50,11 +50,16 @@ internal extension UIViewController {
     }
     
     private func apmBridgedViewDidAppear(_ animated: Bool) {
+        if let _ = ScreenStack.shared.pop(self) {
+            ApmViewControllerPlugin.logger.debug("Deactivating Transaction: \(screenName)")
+            let transaction = ApmAgent.shared().tracer.currentTransaction()
+            transaction?.deactivate()
+            transaction?.end()
+        }
+        
         if let _ = ScreenStack.shared.push(self) {
             ApmViewControllerPlugin.logger.debug("Activating Transaction: \(screenName)")
-            let transaction = ApmAgent.shared()
-                .tracer
-                .startRootTransaction(name: screenName, type: "screen-view")
+            let transaction = ApmAgent.shared().tracer.startRootTransaction(name: screenName, type: "screen-view")
             transaction.activate()
         }
         
@@ -67,13 +72,6 @@ internal extension UIViewController {
     }
     
     private func apmBridgedViewWillDisappear(_ animated: Bool) {
-        if let _ = ScreenStack.shared.pop(self) {
-            ApmViewControllerPlugin.logger.debug("Deactivating Transaction: \(screenName)")
-            let transaction = ApmAgent.shared().tracer.currentTransaction()
-            transaction?.deactivate()
-            transaction?.end()
-        }
-        
         apmViewWillDisappear(animated)
     }
 }
