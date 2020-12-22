@@ -35,8 +35,6 @@ internal class ApmURLRequestHelper: NSObject {
                                                url: url)
         context.destination = destination(url: url)
         span?.spanContext = context
-        
-        #warning("APM-TODO: Add `trace-context` headers: https://www.w3.org/TR/trace-context/")
         return span
     }
     

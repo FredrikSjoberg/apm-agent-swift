@@ -23,7 +23,7 @@ public protocol Span {
     var traceContext: TraceContext { get }
     var spanContext: SpanContext { get set }
     
-    var id: String { get }
+    var id: IdRepresentation { get }
     
     var finished: Bool { get }
     #warning("APM-TODO: Return non-optional Span")

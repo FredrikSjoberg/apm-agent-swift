@@ -16,7 +16,8 @@ internal extension URLSession {
     }
     
     private func shouldMonitor(_ url: URL) -> Bool {
-        if ApmAgent.shared().serverConfiguration?.serverURL.host == url.host {
+        let serverURL = ApmAgent.shared().serverConfiguration?.serverURL
+        if serverURL?.host == url.host, serverURL?.port == url.port {
             return false
         }
         if let urlSessionPlugin = ApmAgent.shared().plugin(ApmURLSessionPlugin.self), let host = url.host {
@@ -45,7 +46,9 @@ internal extension URLSession {
         let span = ApmURLRequestHelper.createSpan(parent: parent, request: request)
         span?.activate()
         
-        return apmDataTaskRequest(with: request) { data, response, error in
+        let modifiedRequest = injectTraceHeader(request, span: span)
+        
+        return apmDataTaskRequest(with: modifiedRequest) { data, response, error in
             if let context = span?.spanContext as? ApmURLSessionSpanContext {
                 context.statusCode = (response as? HTTPURLResponse)?.statusCode
                 context.finished = true
@@ -54,14 +57,21 @@ internal extension URLSession {
             span?.deactivate()
             if let activeTransactionId = activeTransactionId,
                let currentTransactionId = currentTransactionId,
-               activeTransactionId != currentTransactionId {
+               activeTransactionId.hexString != currentTransactionId.hexString {
                 ApmURLSessionPlugin.logger.error("Parent transaction with transaction.id=\(activeTransactionId) no longer active!")
             }
             span?.end()
             
             completionHandler(data, response, error)
-            
         }
+    }
+    
+    private func injectTraceHeader(_ request: URLRequest, span: Span?) -> URLRequest {
+        var modifiedRequest = request
+        if let traceparentHeader = span?.traceContext.traceparentHeader {
+            modifiedRequest.addValue(traceparentHeader, forHTTPHeaderField: ApmURLSessionPlugin.elasticApmTraceHeader)
+        }
+        return modifiedRequest
     }
     
     @objc

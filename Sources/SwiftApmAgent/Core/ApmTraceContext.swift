@@ -8,15 +8,26 @@
 import Foundation
 
 internal class ApmTraceContext: TraceContext {
+    private let version: IdRepresentation = ApmId([0])
+    private lazy var flags: IdRepresentation = {
+        return ApmId([1])
+    }()
     
-    let traceId: String
-    let transactionId: String
-    let parentId: String?
+    var traceparentHeader: String {
+        return [version, traceId, transactionId, flags].map {
+            $0.hexString
+        }
+        .joined(separator: "-")
+    }
+    
+    let traceId: IdRepresentation
+    let transactionId: IdRepresentation
+    let parentId: IdRepresentation?
     let serviceName: String?
     
-    init(traceId: String,
-         transactionId: String,
-         parentId: String? = nil,
+    init(traceId: IdRepresentation,
+         transactionId: IdRepresentation,
+         parentId: IdRepresentation? = nil,
          serviceName: String? = nil) {
         self.traceId = traceId
         self.transactionId = transactionId
@@ -24,7 +35,7 @@ internal class ApmTraceContext: TraceContext {
         self.serviceName = serviceName
     }
     
-    func createChild(parentId: String?) -> TraceContext {
+    func createChild(parentId: IdRepresentation?) -> TraceContext {
         return ApmTraceContext(traceId: traceId,
                                transactionId: transactionId,
                                parentId: parentId,

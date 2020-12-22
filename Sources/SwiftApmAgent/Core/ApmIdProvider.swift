@@ -8,14 +8,20 @@
 import Foundation
 
 internal class ApmIdProvider: IdProvider {
-    
-    func generateId() -> String {
-        #warning("APM-TODO: Use correct format for ids")
-        return UUID().uuidString
+    private func genId(_ count: Int) -> [UInt8] {
+        var bytes = [UInt8](repeating: 0, count: count)
+        let status = SecRandomCopyBytes(kSecRandomDefault, count, &bytes)
+        guard status == errSecSuccess else {
+            return [UInt8](repeating: 0, count: count)
+        }
+        return bytes
     }
     
-    func generateTraceId() -> String {
-        #warning("APM-TODO: Use correct format for traceIds")
-        return UUID().uuidString
+    func generate64BitId() -> IdRepresentation {
+        return ApmId(genId(8))
+    }
+    
+    func generate128BitId() -> IdRepresentation {
+        return ApmId(genId(16))
     }
 }

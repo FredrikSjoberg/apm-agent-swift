@@ -28,7 +28,7 @@ internal class ApmTransaction: Transaction, CustomStringConvertible {
         self.spanContext = spanContext
         self.idProvider = idProvider
         self.timestampProvider = timestampProvider
-        self.id = idProvider.generateId()
+        self.id = traceContext.transactionId
         self.timestamp = timestampProvider.epochNow
         self.name = name
         self.type = type
@@ -43,7 +43,7 @@ internal class ApmTransaction: Transaction, CustomStringConvertible {
     let traceContext: TraceContext
     var spanContext: SpanContext
     
-    let id: String
+    let id: IdRepresentation
     
     var finished: Bool = false
     
@@ -89,9 +89,9 @@ internal class ApmTransaction: Transaction, CustomStringConvertible {
              |   duration: \(duration)
              |   finished: \(finished)
              |      TraceContext:
-             |         traceId: \(traceContext.traceId)
-             |         transactionId: \(traceContext.transactionId)
-             |         parentId: \(traceContext.parentId ?? "nil")
+             |         traceId: \(traceContext.traceId.hexString)
+             |         transactionId: \(traceContext.transactionId.hexString)
+             |         parentId: \(traceContext.parentId?.hexString ?? "nil")
              |         serviceName: \(traceContext.serviceName ?? "nil")
             """
     }

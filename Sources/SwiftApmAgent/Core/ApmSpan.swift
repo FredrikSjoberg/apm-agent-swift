@@ -32,7 +32,7 @@ internal class ApmSpan: Span, CustomStringConvertible {
         self.idProvider = idProvider
         self.timestampProvider = timestampProvider
         self.timestamp = timestampProvider.epochNow
-        self.id = idProvider.generateId()
+        self.id = idProvider.generate64BitId()
         self.name = name
         self.type = type
         self.duration = ApmSpan.durationNotSetConstant
@@ -46,7 +46,7 @@ internal class ApmSpan: Span, CustomStringConvertible {
     let traceContext: TraceContext
     var spanContext: SpanContext
     
-    let id: String
+    let id: IdRepresentation
     
     var finished: Bool = false
     
@@ -92,9 +92,9 @@ internal class ApmSpan: Span, CustomStringConvertible {
              |   duration: \(duration)
              |   finished: \(finished)
              |      TraceContext:
-             |         traceId: \(traceContext.traceId)
-             |         transactionId: \(traceContext.transactionId)
-             |         parentId: \(traceContext.parentId ?? "nil")
+             |         traceId: \(traceContext.traceId.hexString)
+             |         transactionId: \(traceContext.transactionId.hexString)
+             |         parentId: \(traceContext.parentId?.hexString ?? "nil")
              |         serviceName: \(traceContext.serviceName ?? "nil")
             """
     }

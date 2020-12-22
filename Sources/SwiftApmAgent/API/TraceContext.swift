@@ -8,12 +8,12 @@
 import Foundation
 
 public protocol TraceContext {
-    #warning("APM-TODO: Implement https://w3c.github.io/trace-context/#traceparent-field")
+    var traceparentHeader: String { get }
     
-    var traceId: String { get }
-    var transactionId: String { get }
-    var parentId: String? { get }
+    var traceId: IdRepresentation { get }
+    var transactionId: IdRepresentation { get }
+    var parentId: IdRepresentation? { get }
     var serviceName: String? { get }
     
-    func createChild(parentId: String?) -> TraceContext
+    func createChild(parentId: IdRepresentation?) -> TraceContext
 }

@@ -8,6 +8,6 @@
 import Foundation
 
 public protocol IdProvider {
-    func generateId() -> String
-    func generateTraceId() -> String
+    func generate64BitId() -> IdRepresentation
+    func generate128BitId() -> IdRepresentation
 }
