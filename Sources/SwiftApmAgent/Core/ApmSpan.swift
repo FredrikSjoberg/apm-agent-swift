@@ -84,7 +84,7 @@ internal class ApmSpan: Span, CustomStringConvertible {
         let duration = self.duration != ApmSpan.durationNotSetConstant ? "\(self.duration) ms" : "n/a"
         return """
             -+ ApmSpan
-             |   id: \(id)
+             |   id: \(id.hexString)
              |   name: \(name)
              |   type: \(type)
              |   subtype: \(subtype ?? "nil")

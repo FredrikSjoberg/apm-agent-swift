@@ -81,7 +81,7 @@ internal class ApmTransaction: Transaction, CustomStringConvertible {
         let duration = self.duration != ApmSpan.durationNotSetConstant ? "\(self.duration) ms" : "n/a"
         return """
             -+ ApmTransaction
-             |   id: \(id)
+             |   id: \(id.hexString)
              |   name: \(name)
              |   type: \(type)
              |   subtype: \(subtype ?? "nil")
