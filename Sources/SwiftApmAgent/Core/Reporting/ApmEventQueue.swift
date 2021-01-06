@@ -18,7 +18,7 @@ internal class ApmEventQueue: EventQueue {
     private var batch: ApmBatchEvent?
     
     init(dispatchFrequency: Int = 60,
-         logger: Logger = LoggerFactory.getLogger(ApmEventQueue.self, .info),
+         logger: Logger = LoggerFactory.getLogger(ApmEventQueue.self),
          dispatchNotificationListener: DispatchNotificationListener = ApmDispatchNotificationListener()) {
         self.dispatchFrequency = dispatchFrequency
         self.logger = logger

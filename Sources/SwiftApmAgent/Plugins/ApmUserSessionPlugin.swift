@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 
 class ApmUserSessionPlugin: Plugin {
-    internal static let logger: Logger = LoggerFactory.getLogger(ApmUserSessionPlugin.self, .info)
+    internal static let logger: Logger = LoggerFactory.getLogger(ApmUserSessionPlugin.self)
     
     func configure() { }
     

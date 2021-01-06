@@ -17,7 +17,7 @@ internal class ApmTracer: Tracer {
     init(reporter: Reporter = ApmReporter(),
          idProvider: IdProvider = ApmIdProvider(),
          timestampProvider: TimestampProvider = ApmTimestampProvider(),
-         logger: Logger = LoggerFactory.getLogger(ApmTracer.self, .info)) {
+         logger: Logger = LoggerFactory.getLogger(ApmTracer.self)) {
         self.reporter = reporter
         self.idProvider = idProvider
         self.timestampProvider = timestampProvider

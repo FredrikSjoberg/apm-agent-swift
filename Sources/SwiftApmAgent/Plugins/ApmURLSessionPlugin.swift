@@ -8,7 +8,7 @@
 import Foundation
 
 public class ApmURLSessionPlugin: Plugin {
-    internal static let logger: Logger = LoggerFactory.getLogger(ApmURLSessionPlugin.self, .info)
+    internal static let logger: Logger = LoggerFactory.getLogger(ApmURLSessionPlugin.self)
     internal static let elasticApmTraceHeader = "Elastic-Apm-Traceparent"
     
     public func configure() {

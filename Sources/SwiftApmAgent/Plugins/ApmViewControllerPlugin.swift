@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 public class ApmViewControllerPlugin: NSObject, Plugin {
-    internal static let logger: Logger = LoggerFactory.getLogger(ApmViewControllerPlugin.self, .info)
+    internal static let logger: Logger = LoggerFactory.getLogger(ApmViewControllerPlugin.self)
     
     public var excludedViewControllerBundles: Set<String> = [
         "com.apple"

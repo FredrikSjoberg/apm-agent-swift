@@ -14,7 +14,7 @@ internal class ApmEventDispatcher: Dispatcher {
     private let newline = "\n".data(using: .utf8)
     
     init(httpClient: HttpClient = ApmHttpClient(),
-         logger: Logger = LoggerFactory.getLogger(ApmEventDispatcher.self, .info)) {
+         logger: Logger = LoggerFactory.getLogger(ApmEventDispatcher.self)) {
         self.httpClient = httpClient
         self.logger = logger
     }

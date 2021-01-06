@@ -18,7 +18,7 @@ internal class ScreenStack {
     private var stack: [String] = []
     private let logger: Logger
     
-    init(logger: Logger = LoggerFactory.getLogger(ScreenStack.self, .info)) {
+    init(logger: Logger = LoggerFactory.getLogger(ScreenStack.self)) {
         self.logger = logger
     }
     

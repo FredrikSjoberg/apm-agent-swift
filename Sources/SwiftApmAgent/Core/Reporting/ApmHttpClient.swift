@@ -13,7 +13,7 @@ internal class ApmHttpClient: HttpClient {
     private let logger: Logger
     
     init(urlSession: URLSession = URLSession.shared,
-         logger: Logger = LoggerFactory.getLogger(ApmHttpClient.self, .info)) {
+         logger: Logger = LoggerFactory.getLogger(ApmHttpClient.self)) {
         self.urlSession = urlSession
         self.logger = logger
     }

@@ -17,7 +17,7 @@ internal class ApmReporter: Reporter {
     init(encoderRepository: EncoderRepository = ApmEncoderRepository(),
          eventQueue: EventQueue = ApmEventQueue(),
          dispatcher: Dispatcher = ApmEventDispatcher(),
-         logger: Logger = LoggerFactory.getLogger(ApmReporter.self, .info)) {
+         logger: Logger = LoggerFactory.getLogger(ApmReporter.self)) {
         self.encoderRepository = encoderRepository
         self.eventQueue = eventQueue
         self.dispatcher = dispatcher
