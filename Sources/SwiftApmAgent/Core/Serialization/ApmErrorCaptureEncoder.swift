@@ -40,7 +40,7 @@ internal class ApmErrorCaptureEncoder: EventEncoder {
                                      context: nil,
                                      culprit: nil,
                                      exception: exception(context: context),
-                                     log: [])
+                                     log: nil)
         return .init(error: event)
     }
     

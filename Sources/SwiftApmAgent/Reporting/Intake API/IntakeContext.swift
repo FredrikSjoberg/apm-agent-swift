@@ -1,12 +1,11 @@
 //
-//  IntakeAPIContext.swift
+//  IntakeContext.swift
 //  
 //
 //  Created by Fredrik Sjöberg on 2021-01-04.
 //
 
 import Foundation
-
 
 /// Version: https://github.com/elastic/apm-server/blob/v7.10.0/docs/spec/context.json
 struct IntakeContext: Encodable {

@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Event.swift
 //  
 //
 //  Created by Fredrik Sjöberg on 2021-01-05.

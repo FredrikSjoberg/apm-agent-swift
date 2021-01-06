@@ -114,7 +114,7 @@ struct ErrorEvent: ReporterEvent {
         }
         
         /// Additional information added when logging the error.
-        let log: [Log]
+        let log: Log?
         
         struct Log: Encodable {
             /// The severity of the record.

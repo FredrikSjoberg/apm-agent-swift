@@ -21,9 +21,9 @@ public class ApmAgent {
         tracer = ApmTracer()
     }
     
-    internal var tracer: Tracer
-    internal var serverConfiguration: ApmServerConfiguration?
-    internal var plugins: [Plugin] = []
+    public internal(set) var tracer: Tracer
+    public internal(set) var serverConfiguration: ApmServerConfiguration?
+    public internal(set) var plugins: [Plugin] = []
     
     public func configure(_ serverConfiguration: ApmServerConfiguration) {
         self.serverConfiguration = serverConfiguration
