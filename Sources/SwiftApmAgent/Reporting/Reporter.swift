@@ -8,5 +8,5 @@
 import Foundation
 
 internal protocol Reporter {
-    func report(_ span: Span)
+    func report(_ event: Event)
 }

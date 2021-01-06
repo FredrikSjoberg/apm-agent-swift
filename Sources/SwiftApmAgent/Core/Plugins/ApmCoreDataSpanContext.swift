@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal class ApmCoreDataSpanContext: SpanContext {
+internal class ApmCoreDataSpanContext: EventContext {
     
     let name: String
     let dbType: String?
@@ -28,7 +28,7 @@ internal class ApmCoreDataSpanContext: SpanContext {
         self.rowsAffected = rowsAffected
     }
     
-    // MARK: <IntakeEncodable>
+    // MARK: <EventContext>
     static var encoderIdentifier: String {
         return String(describing: Swift.type(of: self))
     }

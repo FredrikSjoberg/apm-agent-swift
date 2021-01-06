@@ -22,7 +22,7 @@ public class ApmURLSessionPlugin: Plugin {
         return encoder
     }
     
-    public var intakeEncoders: [String: () -> IntakeEncoder] {
+    public var intakeEncoders: [String: () -> EventEncoder] {
         return [
             ApmURLSessionSpanContext.encoderIdentifier: { ApmURLSessionSpanEncoder(jsonEncoder: ApmURLSessionPlugin.jsonEncoder) }
         ]

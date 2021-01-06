@@ -7,6 +7,9 @@
 
 import Foundation
 
+#if !os(macOS)
+import CoreData
+
 internal class ApmCoreDataRequestHelper: NSObject {
     static let fetch = "FETCH"
     static let db = "db"
@@ -22,7 +25,7 @@ internal class ApmCoreDataRequestHelper: NSObject {
         }
         .joined(separator: "|")
         
-        span?.spanContext = ApmCoreDataSpanContext(name: coreData,
+        span?.eventContext = ApmCoreDataSpanContext(name: coreData,
                                                    dbType: stores,
                                                    statement: requestConfiguration(request),
                                                    outcome: nil,
@@ -37,7 +40,7 @@ internal class ApmCoreDataRequestHelper: NSObject {
     
     // MARK: Handle results
     static func handleSuccess(_ result: [Any], span: Span?) {
-        let context = span?.spanContext as? ApmCoreDataSpanContext
+        let context = span?.eventContext as? ApmCoreDataSpanContext
         context?.outcome = ApmCoreDataRequestHelper.success
         context?.rowsAffected = Int64(result.count)
         span?.deactivate()
@@ -45,9 +48,16 @@ internal class ApmCoreDataRequestHelper: NSObject {
     }
     
     static func handleFailure(_ error: Error?, span: Span?) {
-        let context = span?.spanContext as? ApmCoreDataSpanContext
+        let context = span?.eventContext as? ApmCoreDataSpanContext
         context?.outcome = ApmCoreDataRequestHelper.failure
+        
+        if let error = error {
+            let errorCapture = span?.captureError(error)
+            errorCapture?.report()
+        }
+        
         span?.deactivate()
         span?.end()
     }
 }
+#endif

@@ -15,24 +15,25 @@ internal class ApmEncoderRepository: EncoderRepository {
         return encoder
     }
     
-    internal static let defaultEncoders: [String: () -> IntakeEncoder] = [
+    internal static let defaultEncoders: [String: () -> EventEncoder] = [
         ApmTransactionContext.encoderIdentifier: { ApmTransactionEncoder(jsonEncoder: jsonEncoder) },
-        ApmSpanContext.encoderIdentifier: { ApmSpanEncoder(jsonEncoder: jsonEncoder) }
+        ApmSpanContext.encoderIdentifier: { ApmSpanEncoder(jsonEncoder: jsonEncoder) },
+        ApmErrorCaptureContext.encoderIdentifier: { ApmErrorCaptureEncoder(jsonEncoder: jsonEncoder) }
     ]
     
-    private var encoderGenerators: [String: () -> IntakeEncoder]
+    private var encoderGenerators: [String: () -> EventEncoder]
     
-    init(encoderGenerators: [String: () -> IntakeEncoder] = ApmEncoderRepository.defaultEncoders) {
+    init(encoderGenerators: [String: () -> EventEncoder] = ApmEncoderRepository.defaultEncoders) {
         self.encoderGenerators = encoderGenerators
     }
     
-    func register(intakeEncoders: [String: () -> IntakeEncoder]) {
+    func register(intakeEncoders: [String: () -> EventEncoder]) {
         intakeEncoders.forEach { key, value in
             encoderGenerators[key] = value
         }
     }
     
-    func encoder(for identifier: String) throws -> IntakeEncoder {
+    func encoder(for identifier: String) throws -> EventEncoder {
         guard let generator = encoderGenerators[identifier] else {
             throw ApmEncodingError.encoderNotFound(identifier)
         }

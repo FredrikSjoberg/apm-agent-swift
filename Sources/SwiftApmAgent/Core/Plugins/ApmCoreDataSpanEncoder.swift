@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal class ApmCoreDataSpanEncoder: IntakeEncoder {
+internal class ApmCoreDataSpanEncoder: EventEncoder {
     
     private static let action = "query"
     private static let success = "success"
@@ -20,13 +20,17 @@ internal class ApmCoreDataSpanEncoder: IntakeEncoder {
         self.jsonEncoder = jsonEncoder
     }
     
-    func encode(_ span: Span) throws -> Data {
-        guard let context = span.spanContext as? ApmCoreDataSpanContext else {
-            throw ApmEncodingError.unsupportedSpanContext(span)
+    func encode(_ event: Event) throws -> Data {
+        guard let span = event as? Span else {
+            throw ApmEncodingError.unsupportedEventType(event)
         }
         
-        let event = spanEvent(span: span, context: context)
-        return try jsonEncoder.encode(event)
+        guard let context = span.eventContext as? ApmCoreDataSpanContext else {
+            throw ApmEncodingError.unsupportedEventContext(span)
+        }
+        
+        let intakeEvent = spanEvent(span: span, context: context)
+        return try jsonEncoder.encode(intakeEvent)
     }
     
     private func outcome(_ context: ApmCoreDataSpanContext) -> String? {

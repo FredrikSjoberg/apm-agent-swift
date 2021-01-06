@@ -24,7 +24,7 @@ internal class ApmTracer: Tracer {
         self.logger = logger
     }
     
-    func register(intakeEncoders: [String: () -> IntakeEncoder]) {
+    func register(intakeEncoders: [String: () -> EventEncoder]) {
         (reporter as? ApmReporter)?.register(intakeEncoders: intakeEncoders)
     }
     
@@ -67,6 +67,26 @@ internal class ApmTracer: Tracer {
     
     func endSpan(_ span: Span) {
         reporter.report(span)
+    }
+    
+    // MARK: Capture error
+    func captureError(_ error: Error) -> ErrorCapture? {
+        if let parent = getActive() {
+            let context = parent.traceContext.createChild(parentId: parent.id)
+            let errorCapture = ApmErrorCapture(tracer: self,
+                                               traceContext: context,
+                                               eventContext: ApmErrorCaptureContext(error: error),
+                                               timestampProvider: timestampProvider,
+                                               idProvider: idProvider)
+            return errorCapture
+        } else {
+            logger.info("No active transaction to base error on. error=\(error.localizedDescription)")
+            return nil
+        }
+    }
+    
+    func reportError(_ error: ErrorCapture) {
+        reporter.report(error)
     }
     
     // MARK: Status

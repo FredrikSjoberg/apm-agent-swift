@@ -16,6 +16,10 @@ public protocol Tracer: AnyObject {
     func startSpan(name: String, type: String) -> Span
     func endSpan(_ span: Span)
     
+    // MARK: Capture Error
+    func captureError(_ error: Error) -> ErrorCapture?
+    func reportError(_ error: ErrorCapture)
+    
     // MARK: Status
     func currentTransaction() -> Transaction?
     func getActive() -> Span?

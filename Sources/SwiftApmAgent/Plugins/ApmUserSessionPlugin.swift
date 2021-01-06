@@ -15,7 +15,7 @@ class ApmUserSessionPlugin: Plugin {
     
     func configure() { }
     
-    var intakeEncoders: [String : () -> IntakeEncoder] {
+    var intakeEncoders: [String : () -> EventEncoder] {
         return [:]
     }
     

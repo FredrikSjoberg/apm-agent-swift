@@ -7,8 +7,8 @@
 
 import Foundation
 
-internal class ApmSpanContext: SpanContext {
-    // MARK: <SpanContext>
+internal class ApmSpanContext: EventContext {
+    // MARK: <EventContext>
     static var encoderIdentifier: String {
         return String(describing: Swift.type(of: self))
     }

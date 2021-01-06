@@ -49,7 +49,7 @@ internal extension URLSession {
         let modifiedRequest = injectTraceHeader(request, span: span)
         
         return apmDataTaskRequest(with: modifiedRequest) { data, response, error in
-            if let context = span?.spanContext as? ApmURLSessionSpanContext {
+            if let context = span?.eventContext as? ApmURLSessionSpanContext {
                 context.statusCode = (response as? HTTPURLResponse)?.statusCode
                 context.finished = true
             }

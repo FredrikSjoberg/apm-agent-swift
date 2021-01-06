@@ -7,6 +7,6 @@
 
 import Foundation
 
-public protocol IntakeEncoder {
-    func encode(_ span: Span) throws -> Data
+public protocol EventEncoder {
+    func encode(_ event: Event) throws -> Data
 }

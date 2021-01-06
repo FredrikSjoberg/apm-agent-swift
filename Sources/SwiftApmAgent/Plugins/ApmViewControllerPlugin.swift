@@ -23,7 +23,7 @@ public class ApmViewControllerPlugin: NSObject, Plugin {
     
     public var traceMode: TraceMode = .transaction
     
-    public var intakeEncoders: [String : () -> IntakeEncoder] {
+    public var intakeEncoders: [String : () -> EventEncoder] {
         return [:]
     }
     

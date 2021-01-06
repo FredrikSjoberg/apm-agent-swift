@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal class ApmSpanEncoder: IntakeEncoder {
+internal class ApmSpanEncoder: EventEncoder {
     enum Error: Swift.Error {
         case unsupportedSpanContext(Span)
         case unsupportedEventType(Span)
@@ -19,15 +19,15 @@ internal class ApmSpanEncoder: IntakeEncoder {
         self.jsonEncoder = jsonEncoder
     }
     
-    func encode(_ span: Span) throws -> Data {
-        if let transaction = span as? Transaction {
-            throw ApmEncodingError.unsupportedEventType(transaction)
+    func encode(_ event: Event) throws -> Data {
+        guard let span = event as? Span else {
+            throw ApmEncodingError.unsupportedEventType(event)
         }
-        guard let context = span.spanContext as? ApmSpanContext else {
-            throw ApmEncodingError.unsupportedSpanContext(span)
+        guard let context = span.eventContext as? ApmSpanContext else {
+            throw ApmEncodingError.unsupportedEventContext(span)
         }
-        let event = spanEvent(span: span, context: context)
-        return try jsonEncoder.encode(event)
+        let intakeEvent = spanEvent(span: span, context: context)
+        return try jsonEncoder.encode(intakeEvent)
     }
     
     private func spanEvent(span: Span, context: ApmSpanContext) -> SpanEvent {

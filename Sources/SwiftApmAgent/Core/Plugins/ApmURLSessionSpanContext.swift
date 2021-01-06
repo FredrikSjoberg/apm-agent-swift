@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal class ApmURLSessionSpanContext: SpanContext {
+internal class ApmURLSessionSpanContext: EventContext {
     let method: String
     let url: URL
     var statusCode: Int?
@@ -32,7 +32,7 @@ internal class ApmURLSessionSpanContext: SpanContext {
         }
     }
     
-    // MARK: <IntakeEncodable>
+    // MARK: <EventContext>
     static var encoderIdentifier: String {
         return String(describing: Swift.type(of: self))
     }

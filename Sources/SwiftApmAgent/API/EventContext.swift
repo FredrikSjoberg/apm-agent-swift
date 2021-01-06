@@ -7,6 +7,6 @@
 
 import Foundation
 
-public protocol SpanContext {
+public protocol EventContext {
     static var encoderIdentifier: String { get }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal class ApmTransactionEncoder: IntakeEncoder {
+internal class ApmTransactionEncoder: EventEncoder {
     
     private let jsonEncoder: JSONEncoder
 
@@ -15,17 +15,17 @@ internal class ApmTransactionEncoder: IntakeEncoder {
         self.jsonEncoder = jsonEncoder
     }
     
-    func encode(_ span: Span) throws -> Data {
-        guard let transaction = span as? Transaction else {
-            throw ApmEncodingError.unsupportedEventType(span)
+    func encode(_ event: Event) throws -> Data {
+        guard let transaction = event as? Transaction else {
+            throw ApmEncodingError.unsupportedEventType(event)
         }
         
-        guard let context = transaction.spanContext as? ApmTransactionContext else {
-            throw ApmEncodingError.unsupportedSpanContext(transaction)
+        guard let context = transaction.eventContext as? ApmTransactionContext else {
+            throw ApmEncodingError.unsupportedEventContext(transaction)
         }
         
-        let event = transactionEvent(transaction: transaction, context: context)
-        return try jsonEncoder.encode(event)
+        let intakeEvent = transactionEvent(transaction: transaction, context: context)
+        return try jsonEncoder.encode(intakeEvent)
     }
     
     private func transactionEvent(transaction: Transaction, context: ApmTransactionContext) -> TransactionEvent {

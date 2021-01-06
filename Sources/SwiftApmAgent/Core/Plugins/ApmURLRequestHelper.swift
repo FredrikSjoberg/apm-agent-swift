@@ -34,7 +34,7 @@ internal class ApmURLRequestHelper: NSObject {
         let context = ApmURLSessionSpanContext(method: method,
                                                url: url)
         context.destination = destination(url: url)
-        span?.spanContext = context
+        span?.eventContext = context
         return span
     }
     

@@ -21,11 +21,11 @@ internal class ApmTransaction: Transaction, CustomStringConvertible {
          tracer: Tracer,
          traceContext: TraceContext,
          timestampProvider: TimestampProvider,
-         spanContext: SpanContext = ApmTransactionContext(),
+         spanContext: EventContext = ApmTransactionContext(),
          idProvider: IdProvider = ApmIdProvider()) {
         self.tracer = tracer
         self.traceContext = traceContext
-        self.spanContext = spanContext
+        self.eventContext = spanContext
         self.idProvider = idProvider
         self.timestampProvider = timestampProvider
         self.id = traceContext.transactionId
@@ -41,7 +41,7 @@ internal class ApmTransaction: Transaction, CustomStringConvertible {
     var subtype: String?
     
     let traceContext: TraceContext
-    var spanContext: SpanContext
+    var eventContext: EventContext
     
     let id: IdRepresentation
     
@@ -73,6 +73,19 @@ internal class ApmTransaction: Transaction, CustomStringConvertible {
                            traceContext: context,
                            timestampProvider: timestampProvider)
         return span
+    }
+    
+    func captureError(_ error: Error) -> ErrorCapture? {
+        guard let tracer = tracer else {
+            return nil
+        }
+        let context = traceContext.createChild(parentId: id)
+        let errorCapture = ApmErrorCapture(tracer: tracer,
+                                           traceContext: context,
+                                           eventContext: ApmErrorCaptureContext(error: error),
+                                           timestampProvider: timestampProvider,
+                                           idProvider: idProvider)
+        return errorCapture
     }
     
     // MARK: <CustomStringConvertible>

@@ -15,5 +15,5 @@ public protocol Plugin {
     /// - Key: `encoderIdentifier` identifying the `SpanContext`
     /// - Value: generator closure resulting in an `IntakeEncoder` that will handle encoding of the associated `SpanContext`
     ///
-    var intakeEncoders: [String: () -> IntakeEncoder] { get }
+    var intakeEncoders: [String: () -> EventEncoder] { get }
 }

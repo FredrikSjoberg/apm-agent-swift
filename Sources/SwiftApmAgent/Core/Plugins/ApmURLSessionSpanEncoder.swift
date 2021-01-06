@@ -7,29 +7,33 @@
 
 import Foundation
 
-internal class ApmURLSessionSpanEncoder: IntakeEncoder {
+internal class ApmURLSessionSpanEncoder: EventEncoder {
     
     private static let http = "HTTP"
     private static let success = "success"
     private static let failure = "failure"
     
     private let jsonEncoder: JSONEncoder
-
+    
     init(jsonEncoder: JSONEncoder) {
         self.jsonEncoder = jsonEncoder
     }
     
-    func encode(_ span: Span) throws -> Data {
-        guard let context = span.spanContext as? ApmURLSessionSpanContext else {
-            throw ApmEncodingError.unsupportedSpanContext(span)
+    func encode(_ event: Event) throws -> Data {
+        guard let span = event as? Span else {
+            throw ApmEncodingError.unsupportedEventType(event)
         }
         
-        if let transaction = span as? Transaction {
-            let event = transactionEvent(transaction: transaction, context: context)
-            return try jsonEncoder.encode(event)
+        guard let context = span.eventContext as? ApmURLSessionSpanContext else {
+            throw ApmEncodingError.unsupportedEventContext(span)
+        }
+        
+        if let transaction = event as? Transaction {
+            let intakeEvent = transactionEvent(transaction: transaction, context: context)
+            return try jsonEncoder.encode(intakeEvent)
         } else {
-            let event = spanEvent(span: span, context: context)
-            return try jsonEncoder.encode(event)
+            let intakeEvent = spanEvent(span: span, context: context)
+            return try jsonEncoder.encode(intakeEvent)
         }
     }
     
@@ -72,12 +76,12 @@ internal class ApmURLSessionSpanEncoder: IntakeEncoder {
         }
     }
     
-    private func transactionContext(_ context: ApmURLSessionSpanContext) -> TransactionEvent.Transaction.Context? {
+    private func transactionContext(_ context: ApmURLSessionSpanContext) -> IntakeContext? {
         return .init(response: transactionResponse(context),
                      request: transactionRequest(context))
     }
     
-    private func transactionRequest(_ context: ApmURLSessionSpanContext) -> TransactionEvent.Transaction.Context.Request? {
+    private func transactionRequest(_ context: ApmURLSessionSpanContext) -> IntakeContext.Request? {
         return .init(body: nil,
                      env: [:],
                      headers: [:],
@@ -86,7 +90,7 @@ internal class ApmURLSessionSpanEncoder: IntakeEncoder {
                      url: transactionUrl(context))
     }
     
-    private func transactionResponse(_ context: ApmURLSessionSpanContext) -> TransactionEvent.Transaction.Context.Response? {
+    private func transactionResponse(_ context: ApmURLSessionSpanContext) -> IntakeContext.Response? {
         return .init(statusCode: context.statusCode,
                      transferSize: nil,
                      encodedBodySize: nil,
@@ -95,7 +99,7 @@ internal class ApmURLSessionSpanEncoder: IntakeEncoder {
                      finished: context.finished)
     }
     
-    private func transactionUrl(_ context: ApmURLSessionSpanContext) -> TransactionEvent.Transaction.Context.Request.URL {
+    private func transactionUrl(_ context: ApmURLSessionSpanContext) -> IntakeContext.Request.URL {
         return .init(raw: context.url.absoluteString,
                      protocol: context.url.scheme,
                      full: context.url.absoluteString,

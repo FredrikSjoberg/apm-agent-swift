@@ -9,6 +9,6 @@ import Foundation
 
 internal enum ApmEncodingError: Error {
     case encoderNotFound(String)
-    case unsupportedSpanContext(Span)
-    case unsupportedEventType(Span)
+    case unsupportedEventContext(Event)
+    case unsupportedEventType(Event)
 }

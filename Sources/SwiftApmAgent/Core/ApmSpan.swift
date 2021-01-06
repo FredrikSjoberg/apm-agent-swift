@@ -24,11 +24,11 @@ internal class ApmSpan: Span, CustomStringConvertible {
          tracer: Tracer,
          traceContext: TraceContext,
          timestampProvider: TimestampProvider,
-         spanContext: SpanContext = ApmSpanContext(),
+         spanContext: EventContext = ApmSpanContext(),
          idProvider: IdProvider = ApmIdProvider()) {
         self.tracer = tracer
         self.traceContext = traceContext
-        self.spanContext = spanContext
+        self.eventContext = spanContext
         self.idProvider = idProvider
         self.timestampProvider = timestampProvider
         self.timestamp = timestampProvider.epochNow
@@ -44,7 +44,7 @@ internal class ApmSpan: Span, CustomStringConvertible {
     var subtype: String?
     
     let traceContext: TraceContext
-    var spanContext: SpanContext
+    var eventContext: EventContext
     
     let id: IdRepresentation
     
@@ -62,6 +62,19 @@ internal class ApmSpan: Span, CustomStringConvertible {
                            traceContext: context,
                            timestampProvider: timestampProvider)
         return span
+    }
+    
+    func captureError(_ error: Error) -> ErrorCapture? {
+        guard let tracer = tracer else {
+            return nil
+        }
+        let context = traceContext.createChild(parentId: id)
+        let errorCapture = ApmErrorCapture(tracer: tracer,
+                                           traceContext: context,
+                                           eventContext: ApmErrorCaptureContext(error: error),
+                                           timestampProvider: timestampProvider,
+                                           idProvider: idProvider)
+        return errorCapture
     }
     
     func activate() {

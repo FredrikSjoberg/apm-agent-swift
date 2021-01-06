@@ -23,7 +23,7 @@ class ApmCoreDataPlugin: Plugin {
         return encoder
     }
     
-    public var intakeEncoders: [String: () -> IntakeEncoder] {
+    public var intakeEncoders: [String: () -> EventEncoder] {
         return [
             ApmCoreDataSpanContext.encoderIdentifier: { ApmCoreDataSpanEncoder(jsonEncoder: ApmCoreDataPlugin.jsonEncoder) }
         ]

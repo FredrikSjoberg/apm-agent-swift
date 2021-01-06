@@ -28,19 +28,19 @@ internal class ApmReporter: Reporter {
         }
     }
     
-    func register(intakeEncoders: [String: () -> IntakeEncoder]) {
+    func register(intakeEncoders: [String: () -> EventEncoder]) {
         encoderRepository.register(intakeEncoders: intakeEncoders)
     }
     
-    func report(_ span: Span) {
-        let encoderIdentifier = type(of: span.spanContext).encoderIdentifier
+    func report(_ event: Event) {
+        let encoderIdentifier = type(of: event.eventContext).encoderIdentifier
         do {
-            logger.debug("Preparing encode span for dispatch \n \(span)")
+            logger.debug("Preparing encode event for dispatch \n \(event)")
             let encoder = try encoderRepository.encoder(for: encoderIdentifier)
-            let event = try encoder.encode(span)
+            let event = try encoder.encode(event)
             eventQueue.push(event)
         } catch {
-            logger.error("Failed to encode span with span.id=\(span.id). Error: \(error)")
+            logger.error("Failed to encode event with event.id=\(event.id). Error: \(error)")
         }
     }
 }
