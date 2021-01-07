@@ -58,8 +58,8 @@ internal class ApmEventQueue: EventQueue {
             return nil
         }
         do {
-            let metadata = MetadataEvent(metadata: .init(process: nil,
-                                                         system: nil,
+            let metadata = MetadataEvent(metadata: .init(process: generateProcessInfo(),
+                                                         system: generateSystemInfo(),
                                                          service: generateMetadataService(serviceName: serviceName)))
             let metadataEncoder = JSONEncoder()
             metadataEncoder.keyEncodingStrategy = .convertToSnakeCase
@@ -70,10 +70,23 @@ internal class ApmEventQueue: EventQueue {
         }
     }
     
+    private func generateProcessInfo() -> MetadataEvent.Metadata.Process {
+        return .init(pid: MachineInfo.pid,
+                     title: MachineInfo.processName,
+                     ppid: nil,
+                     argv: MachineInfo.processArguments)
+    }
+    
+    private func generateSystemInfo() -> MetadataEvent.Metadata.System {
+        return .init(architecture: MachineInfo.machine,
+                     detectedHostName: nil,
+                     platform: nil)
+    }
+    
     private func generateMetadataService(serviceName: String) -> MetadataEvent.Metadata.Service {
         return .init(name: serviceName,
-                     version: nil,
-                     environment: nil,
+                     version: ApmAgent.shared().serverConfiguration?.serviceVersion,
+                     environment: ApmAgent.shared().serverConfiguration?.environment,
                      agent: generateMetadataAgent(),
                      runtime: nil,
                      language: nil)
