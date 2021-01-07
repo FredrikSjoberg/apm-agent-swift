@@ -89,6 +89,26 @@ internal class ApmTracer: Tracer {
         reporter.report(error)
     }
     
+    // MARK: Metricset
+    func createMetricSet() -> MetricSet? {
+        if let parent = getActive() {
+            let context = parent.traceContext.createChild(parentId: parent.id)
+            
+            let metricSet = ApmMetricSet(tracer: self,
+                                         traceContext: context,
+                                         timestampProvider: timestampProvider,
+                                         idProvider: idProvider)
+            return metricSet
+        } else {
+            logger.info("No active transaction to base metricset on.")
+            return nil
+        }
+    }
+    
+    func reportMetricSet(_ metricSet: MetricSet) {
+        reporter.report(metricSet)
+    }
+    
     // MARK: Status
     private var activeSpans: [String: Span] = [:]
     private var activeTransaction: Transaction?

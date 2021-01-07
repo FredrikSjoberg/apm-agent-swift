@@ -1,22 +1,21 @@
 //
-//  ApmErrorCapture.swift
+//  File.swift
 //  
 //
-//  Created by Fredrik Sjöberg on 2021-01-04.
+//  Created by Fredrik Sjöberg on 2021-01-07.
 //
 
 import Foundation
 
-internal class ApmErrorCapture: ErrorCapture, CustomStringConvertible {
+internal class ApmMetricSet: MetricSet, CustomStringConvertible {
     
     private weak var tracer: Tracer?
     private let idProvider: IdProvider
     private let timestampProvider: TimestampProvider
     
-    
     init(tracer: Tracer,
          traceContext: TraceContext,
-         eventContext: EventContext,
+         eventContext: EventContext = ApmMetricSetContext(),
          timestampProvider: TimestampProvider,
          idProvider: IdProvider = ApmIdProvider()) {
         self.tracer = tracer
@@ -36,16 +35,16 @@ internal class ApmErrorCapture: ErrorCapture, CustomStringConvertible {
     
     let id: IdRepresentation
     
-    // MARK: <ErrorCapture>
+    // MARK: <Metricset>
     func report() {
-        tracer?.reportError(self)
+        tracer?.reportMetricSet(self)
     }
     
     // MARK: <CustomStringConvertible>
     var description: String {
         let timestamp = "\(self.timestamp) ms"
         return """
-            -+ ApmErrorCapture
+            -+ ApmMetricSet
              |   id: \(id.hexString)
              |   timestamp: \(timestamp)
              |      TraceContext:

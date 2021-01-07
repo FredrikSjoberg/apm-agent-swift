@@ -20,6 +20,10 @@ public protocol Tracer: AnyObject {
     func captureError(_ error: Error) -> ErrorCapture?
     func reportError(_ error: ErrorCapture)
     
+    // MARK: Metricset
+    func createMetricSet() -> MetricSet?
+    func reportMetricSet(_ metricSet: MetricSet)
+    
     // MARK: Status
     func currentTransaction() -> Transaction?
     func getActive() -> Span?

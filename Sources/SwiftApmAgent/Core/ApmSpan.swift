@@ -16,9 +16,6 @@ internal class ApmSpan: Span, CustomStringConvertible {
     private let idProvider: IdProvider
     private let timestampProvider: TimestampProvider
     
-    var timestamp: Int64
-    var duration: Int64
-    
     init(name: String,
          type: String,
          tracer: Tracer,
@@ -38,15 +35,20 @@ internal class ApmSpan: Span, CustomStringConvertible {
         self.duration = ApmSpan.durationNotSetConstant
     }
     
-    // MARK: <Span>
-    var name: String
-    var type: String
-    var subtype: String?
+    // MARK: <Event>
+    var timestamp: Int64
     
     let traceContext: TraceContext
     var eventContext: EventContext
     
     let id: IdRepresentation
+    
+    // MARK: <Span>
+    var name: String
+    var type: String
+    var subtype: String?
+    
+    var duration: Int64
     
     var finished: Bool = false
     

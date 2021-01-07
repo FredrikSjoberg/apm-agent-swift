@@ -44,6 +44,9 @@ internal class LogLevelRegistry {
         if let identifier = try? typeIdentifier(for: ApmUserSessionPlugin.self) {
             result[identifier] = .info
         }
+        if let identifier = try? typeIdentifier(for: ApmSystemMetricSetPlugin.self) {
+            result[identifier] = .info
+        }
         return result
     }()
     

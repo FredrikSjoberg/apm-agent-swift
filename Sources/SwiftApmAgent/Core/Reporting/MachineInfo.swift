@@ -83,4 +83,78 @@ struct MachineInfo {
         return nil
         #endif
     }
+    
+    /// Returns the cpu load for process and system respectively
+    static var cpuLoad: (process: Double?, system: Double?) {
+        let HOST_CPU_LOAD_INFO_COUNT = MemoryLayout<host_cpu_load_info>.stride/MemoryLayout<integer_t>.stride
+        var size = mach_msg_type_number_t(HOST_CPU_LOAD_INFO_COUNT)
+        var cpuLoadInfo = host_cpu_load_info()
+        
+        let result = withUnsafeMutablePointer(to: &cpuLoadInfo) {
+            $0.withMemoryRebound(to: integer_t.self, capacity: HOST_CPU_LOAD_INFO_COUNT) {
+                host_statistics(mach_host_self(), HOST_CPU_LOAD_INFO, $0, &size)
+            }
+        }
+        guard result == KERN_SUCCESS else {
+            return (nil, nil)
+        }
+        
+        let usrTicks = Double(cpuLoadInfo.cpu_ticks.0)
+        let systTicks = Double(cpuLoadInfo.cpu_ticks.1)
+        let idleTicks = Double(cpuLoadInfo.cpu_ticks.2)
+        let niceTicks = Double(cpuLoadInfo.cpu_ticks.3)
+        
+        let totalTicks = usrTicks + systTicks + idleTicks + niceTicks
+        
+        let sys = systTicks / totalTicks
+        let usr = (usrTicks + niceTicks) / totalTicks
+        return (usr, sys)
+    }
+    
+    /// in bytes
+    static var processMemoryUsage: UInt64? {
+        let taskVMInfoCount = mach_msg_type_number_t(MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<integer_t>.size)
+        guard let revOffset = MemoryLayout.offset(of: \task_vm_info_data_t.min_address) else {
+            return nil
+        }
+        
+        let taskVMInfoRevCount = mach_msg_type_number_t(revOffset / MemoryLayout<integer_t>.size)
+        
+        var info = task_vm_info_data_t()
+        var count = taskVMInfoCount
+        let result = withUnsafeMutablePointer(to: &info) { infoPtr in
+            infoPtr.withMemoryRebound(to: integer_t.self, capacity: Int(count)) { intPtr in
+                task_info(mach_task_self_, task_flavor_t(TASK_VM_INFO), intPtr, &count)
+            }
+        }
+        guard result == KERN_SUCCESS, count >= taskVMInfoRevCount else {
+            return nil
+        }
+        
+        return info.phys_footprint
+    }
+    
+    /// in bytes
+    static var totalSystemMemory: UInt64? {
+        return ProcessInfo().physicalMemory
+    }
+    
+    /// in bytes
+    static var availableSystemMemory: UInt64? {
+        var size: mach_msg_type_number_t =
+            UInt32(MemoryLayout<vm_statistics64_data_t>.size / MemoryLayout<integer_t>.size)
+        let hostInfo = vm_statistics64_t.allocate(capacity: 1)
+        
+        let result = hostInfo.withMemoryRebound(to: integer_t.self, capacity: Int(size)) {
+            host_statistics64(mach_host_self(), HOST_VM_INFO64, $0, &size)
+        }
+        guard result == KERN_SUCCESS else {
+            return nil
+        }
+        
+        let data = hostInfo.move()
+        hostInfo.deallocate()
+        let free = (UInt64(data.free_count) + UInt64(data.inactive_count)) * UInt64(vm_kernel_page_size)
+        return free
+    }
 }
