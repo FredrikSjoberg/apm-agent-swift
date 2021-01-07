@@ -1,6 +1,6 @@
 //
 //  ApmAgent.swift
-//  
+//
 //
 //  Created by Fredrik Sjöberg on 2020-12-04.
 //
@@ -12,6 +12,9 @@ public class ApmAgent {
     public let agentName: String = "SwiftApmAgent"
     public let agentVersion: String = "1.0.0"
     
+    /// In seconds
+    public let defaultDispatchFrequency: Int = 30
+    
     public class func shared() -> ApmAgent {
         return sharedInstance
     }
@@ -20,7 +23,9 @@ public class ApmAgent {
     private init() { }
     
     public internal(set) lazy var tracer: Tracer = {
-        ApmTracer()
+        let eventQueue = ApmEventQueue(dispatchFrequency: serverConfiguration?.dispatchFrequency ?? defaultDispatchFrequency)
+        let reporter = ApmReporter(eventQueue: eventQueue)
+        return ApmTracer(reporter: reporter)
     }()
     public internal(set) var serverConfiguration: ApmServerConfiguration?
     public internal(set) var plugins: [Plugin] = []
