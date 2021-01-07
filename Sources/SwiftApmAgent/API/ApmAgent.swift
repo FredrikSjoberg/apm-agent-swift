@@ -17,13 +17,14 @@ public class ApmAgent {
     }
     private static let sharedInstance = ApmAgent()
     
-    private init() {
-        tracer = ApmTracer()
-    }
+    private init() { }
     
-    public internal(set) var tracer: Tracer
+    public internal(set) lazy var tracer: Tracer = {
+        ApmTracer()
+    }()
     public internal(set) var serverConfiguration: ApmServerConfiguration?
     public internal(set) var plugins: [Plugin] = []
+    public let logLevelRegistry: LogLevelRegistry = ApmLogLevelRegistry()
     
     public func configure(_ serverConfiguration: ApmServerConfiguration) {
         self.serverConfiguration = serverConfiguration

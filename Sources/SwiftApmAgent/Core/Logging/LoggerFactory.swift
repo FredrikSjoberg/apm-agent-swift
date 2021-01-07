@@ -41,7 +41,7 @@ internal struct LoggerFactory {
     private static func logLevel(for object: AnyClass, requestedLevel: LogLevel?) -> LogLevel {
         if let requestedLevel = requestedLevel {
             return requestedLevel
-        } else if let registeredLevel = LogLevelRegistry.shared.logLevel(object) {
+        } else if let registeredLevel = ApmAgent.shared().logLevelRegistry.logLevel(object) {
             return registeredLevel
         } else {
             return .error
