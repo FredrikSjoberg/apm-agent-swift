@@ -78,8 +78,8 @@ internal class ApmEventQueue: EventQueue {
     }
     
     private func generateSystemInfo() -> MetadataEvent.Metadata.System {
-        return .init(architecture: MachineInfo.machine,
-                     detectedHostName: nil,
+        return .init(architecture: MachineInfo.architecture,
+                     detectedHostName: MachineInfo.hostName,
                      platform: nil)
     }
     
@@ -88,13 +88,18 @@ internal class ApmEventQueue: EventQueue {
                      version: ApmAgent.shared().serverConfiguration?.serviceVersion,
                      environment: ApmAgent.shared().serverConfiguration?.environment,
                      agent: generateMetadataAgent(),
-                     runtime: nil,
+                     runtime: generateRuntime(),
                      language: nil)
     }
     
     private func generateMetadataAgent() -> MetadataEvent.Metadata.Service.Agent {
         return .init(name: ApmAgent.shared().agentName,
                      version: ApmAgent.shared().agentVersion)
+    }
+    
+    private func generateRuntime() -> MetadataEvent.Metadata.Service.Runtime {
+        return .init(name: MachineInfo.runtimeName,
+                     version: MachineInfo.runtimeVersion)
     }
     
     // MARK: <EventQueue>

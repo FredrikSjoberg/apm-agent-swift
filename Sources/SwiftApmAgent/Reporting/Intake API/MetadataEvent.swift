@@ -41,7 +41,7 @@ struct MetadataEvent: ReporterEvent {
         struct System: Encodable {
             /// Architecture of the system the agent is running on.
             ///
-            /// Example: ARM64
+            /// Example: arm64
             let architecture: String?
             
             /// Hostname of the host the monitored service is running on. It normally contains what the hostname command returns on the host machine.
