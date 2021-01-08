@@ -10,6 +10,7 @@ import Foundation
 public protocol Tracer: AnyObject {
     // MARK: Transaction
     func startRootTransaction(name: String, type: String) -> Transaction
+    func startTransaction(name: String, type: String) -> Transaction
     func endTransaction(_ transaction: Transaction)
     
     // MARK: Span

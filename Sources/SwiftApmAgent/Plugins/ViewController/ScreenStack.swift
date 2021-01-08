@@ -13,6 +13,9 @@ import UIKit
 internal class ScreenStack {
     static var excludedViewControllerBundles: Set<String> = []
     
+    /// Records presented ViewController to enable correct screen-view tracking when app resigns/regains active status  (ie willResignActiveNotification/didBecomeActiveNotification)
+    var lastActiveViewController: UIViewController?
+    
     static let shared = ScreenStack()
     
     private var stack: [String] = []

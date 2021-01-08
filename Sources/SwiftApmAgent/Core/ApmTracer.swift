@@ -29,6 +29,23 @@ internal class ApmTracer: Tracer {
     }
     
     // MARK: Transaction
+    func startTransaction(name: String, type: String) -> Transaction {
+        if let parent = currentTransaction() {
+            let context = ApmTraceContext(traceId: parent.traceContext.traceId,
+                                          transactionId: idProvider.generate64BitId(),
+                                          parentId: parent.id,
+                                          serviceName: parent.traceContext.serviceName)
+            let transaction = ApmTransaction(name: name,
+                                             type: type,
+                                             tracer: self,
+                                             traceContext: context,
+                                             timestampProvider: timestampProvider)
+            return transaction
+        } else {
+            return startRootTransaction(name: name, type: type)
+        }
+    }
+    
     func startRootTransaction(name: String, type: String) -> Transaction {
         if let activeTransaction = currentTransaction() {
             logger.debug("Deactivating currently active transaction with transaction.id=\(activeTransaction.id) before starting new root transaction")
@@ -155,7 +172,8 @@ internal class ApmTracer: Tracer {
             
             self?.activeSpans[span.id.hexString] = span
             self?.activeSpanQueue.append(span)
-            if let transaction = span as? Transaction {
+            if let transaction = span as? Transaction,
+               (transaction.traceContext.parentId == nil || self?.activeTransaction == nil) {
                 self?.activeTransaction = transaction
             }
             self?.logger.debug("Activating Span \n \(span)")
@@ -170,7 +188,9 @@ internal class ApmTracer: Tracer {
             }
             
             self?.activeSpans[span.id.hexString] = nil
-            if let transaction = span as? Transaction, transaction.id.hexString == span.id.hexString {
+            if let transaction = span as? Transaction,
+               let activeTransaction = self?.activeTransaction,
+               transaction.id.hexString == activeTransaction.id.hexString {
                 self?.activeTransaction = nil
             }
             self?.logger.debug("Deactivating Span \n \(span)")
